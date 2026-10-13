@@ -1,25 +1,8 @@
-var CACHE="todo-v4";
-var FILES=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png"];
-self.addEventListener("install",function(e){
-  e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(FILES);}));
-  self.skipWaiting();
-});
-self.addEventListener("activate",function(e){
-  e.waitUntil(caches.keys().then(function(ks){
-    return Promise.all(ks.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));
-  }));
-  self.clients.claim();
-});
-self.addEventListener("fetch",function(e){
-  if(e.request.method!=="GET") return;
-  e.respondWith(
-    caches.match(e.request).then(function(r){
-      return r || fetch(e.request).then(function(res){
-        if(res && res.ok && new URL(e.request.url).origin===location.origin){
-          var copy=res.clone(); caches.open(CACHE).then(function(c){c.put(e.request,copy);});
-        }
-        return res;
-      }).catch(function(){return caches.match("./index.html");});
-    })
-  );
-});
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "ke.co.imaradsb.todo",
+        "sha256_cert_fingerprints": ["F6:20:30:3D:06:D1:57:54:9C:0B:E9:AE:15:F9:35:99:EA:44:8B:B4:AA:07:0B:D3:AA:A0:C8:4E:E4:44:CD:2F"]
+      }
+    }]
