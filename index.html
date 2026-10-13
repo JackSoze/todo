@@ -68,6 +68,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:14px}
 .foot button{font:inherit;font-size:14px;background:none;border:0;color:var(--danger);cursor:pointer;padding:8px 0}
 .foot button[disabled]{opacity:.35;cursor:default}
+.upd{display:flex;align-items:center;gap:12px;margin-top:26px;color:var(--muted);font-size:14px}
+.upd button{font:inherit;font-size:14px;padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 @media (prefers-reduced-motion:no-preference){.check{transition:background .15s,border-color .15s}}
 </style>
 </head>
@@ -97,6 +99,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <span id="count"></span>
     <button id="clear" type="button">Clear done</button>
   </div>
+  <div class="upd"><button id="upd" type="button">Update app</button><span id="updMsg" role="status"></span></div>
 </main>
 <script>
 (function(){
@@ -173,6 +176,18 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     };
   });
   render();
+  var um=document.getElementById("updMsg");
+  try{ if(sessionStorage.getItem("updated")){ sessionStorage.removeItem("updated"); um.textContent="Updated. You have the latest version."; } }catch(e){}
+  document.getElementById("upd").onclick=function(){
+    if(!navigator.onLine){ um.textContent="No internet. Try again when connected."; return; }
+    um.textContent="Updating...";
+    var files=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png"];
+    var clear=window.caches ? caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}) : Promise.resolve();
+    clear.then(function(){
+      return Promise.all(files.map(function(f){ return fetch(f,{cache:"reload"}); }));
+    }).then(function(){ try{sessionStorage.setItem("updated","1");}catch(e){} location.reload(); })
+      .catch(function(){ um.textContent="Update failed. Try again."; });
+  };
   if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 })();
 </script>
