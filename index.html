@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>To-do</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1F6F5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="To-do">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{
+  --bg:#EDEFEC; --card:#FFFFFF; --ink:#1D2926; --muted:#6B7773; --line:#D5DAD6;
+  --accent:#1F6F5C; --accent-ink:#FFFFFF; --danger:#B3402F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A18; --card:#1E2724; --ink:#E7ECE9; --muted:#8E9B96; --line:#2C3834;
+    --accent:#4FBF9F; --accent-ink:#0E1513; --danger:#E27A68;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A18; --card:#1E2724; --ink:#E7ECE9; --muted:#8E9B96; --line:#2C3834;
+  --accent:#4FBF9F; --accent-ink:#0E1513; --danger:#E27A68;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+main{max-width:520px;margin:0 auto;padding:28px 18px 40px}
+h1{font-size:34px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 22px;font-size:15px}
+.add{display:flex;gap:8px;margin-bottom:18px}
+.add input{flex:1;min-width:0;font:inherit;font-size:17px;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
+.add input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.add button{font:inherit;font-weight:600;font-size:16px;padding:0 20px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.opts{display:flex;gap:8px;margin:-8px 0 18px}
+.opts label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.opts select,.opts input{font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-width:0;width:100%}
+.opts select:focus,.opts input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+li[data-p="2"]{box-shadow:inset 4px 0 0 var(--danger)}
+li[data-p="0"]{box-shadow:inset 4px 0 0 var(--line)}
+.meta{display:flex;gap:10px;font-size:13px;color:var(--muted);margin-top:-4px;padding-bottom:6px}
+.meta .hi{color:var(--danger);font-weight:600}
+.meta .late{color:var(--danger);font-weight:600}
+li.done .meta{opacity:.6}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tabs button{font:inherit;font-size:14px;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+ul{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;border:1px solid var(--line);overflow:hidden}
+li{display:flex;align-items:center;gap:12px;padding:6px 8px 6px 14px;border-bottom:1px solid var(--line);min-height:56px}
+li:last-child{border-bottom:0}
+.num{flex:none;min-width:22px;text-align:right;color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.check{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--muted);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--accent-ink);padding:0}
+li.done .check{background:var(--accent);border-color:var(--accent)}
+.check svg{width:16px;height:16px;opacity:0}
+li.done .check svg{opacity:1}
+.text{flex:1;min-width:0;font-size:17px;line-height:1.3;word-break:break-word;padding-top:8px}
+li.done .t{color:var(--muted);text-decoration:line-through}
+.del{flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--muted);font-size:22px;cursor:pointer;border-radius:10px}
+.del:hover,.del:focus-visible{color:var(--danger)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.empty{padding:28px 18px;text-align:center;color:var(--muted)}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:14px}
+.foot button{font:inherit;font-size:14px;background:none;border:0;color:var(--danger);cursor:pointer;padding:8px 0}
+.foot button[disabled]{opacity:.35;cursor:default}
+@media (prefers-reduced-motion:no-preference){.check{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<main>
+  <h1>To-do</h1>
+  <p class="sub" id="sub"></p>
+  <div class="add">
+    <input id="in" type="text" placeholder="Add a task" autocomplete="off" enterkeyhint="done" aria-label="New task">
+    <button id="addBtn" type="button">Add</button>
+  </div>
+  <div class="opts">
+    <label>Priority
+      <select id="pri" aria-label="Priority"><option value="2">High</option><option value="1" selected>Normal</option><option value="0">Low</option></select>
+    </label>
+    <label>Due date
+      <input id="due" type="date" aria-label="Due date">
+    </label>
+  </div>
+  <div class="tabs" role="group" aria-label="Filter tasks">
+    <button type="button" data-f="all" aria-pressed="true">All</button>
+    <button type="button" data-f="active" aria-pressed="false">To do</button>
+    <button type="button" data-f="done" aria-pressed="false">Done</button>
+  </div>
+  <ul id="list"></ul>
+  <div class="foot">
+    <span id="count"></span>
+    <button id="clear" type="button">Clear done</button>
+  </div>
+</main>
+<script>
+(function(){
+  var KEY="todo-items-v1", tasks=[], filter="all";
+  try{ var raw=localStorage.getItem(KEY); if(raw) tasks=JSON.parse(raw)||[]; }catch(e){ tasks=[]; }
+  function todayStr(){ return new Date().toLocaleDateString("en-CA"); }
+  function dayDiff(d){ return Math.round((Date.parse(d+"T00:00:00")-Date.parse(todayStr()+"T00:00:00"))/864e5); }
+  function dueLabel(t){
+    if(!t.due) return null;
+    var n=dayDiff(t.due);
+    if(n<0) return {late:!t.done, text: t.done? "Was due "+t.due : "Overdue by "+(-n)+(n===-1?" day":" days")};
+    if(n===0) return {late:false,text:"Due today"};
+    if(n===1) return {late:false,text:"Due tomorrow"};
+    return {late:false,text:"Due "+new Date(t.due+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"})};
+  }
+  function pri(t){ return t.pri===undefined?1:t.pri; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(tasks)); }catch(e){} }
+  var list=document.getElementById("list"), input=document.getElementById("in");
+  var tick='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+
+  function render(){
+    var shown=tasks.filter(function(t){ return filter==="all"||(filter==="done"?t.done:!t.done); }).sort(function(a,b){
+      if(a.done!==b.done) return a.done?1:-1;
+      if(pri(a)!==pri(b)) return pri(b)-pri(a);
+      return (a.due||"9999").localeCompare(b.due||"9999");
+    });
+    list.innerHTML="";
+    if(!shown.length){
+      var e=document.createElement("li"); e.className="empty";
+      e.style.display="block";
+      e.textContent = filter==="done" ? "Nothing finished yet." : filter==="active" ? "All clear. Add a task above." : "No tasks yet. Add your first one above.";
+      list.appendChild(e);
+    }
+    shown.forEach(function(t,i){
+      var li=document.createElement("li"); if(t.done) li.className="done"; li.dataset.p=pri(t);
+      var c=document.createElement("button"); c.className="check"; c.type="button"; c.innerHTML=tick;
+      c.setAttribute("aria-label",(t.done?"Mark not done: ":"Mark done: ")+t.text);
+      c.onclick=function(){ t.done=!t.done; save(); render(); };
+      var s=document.createElement("div"); s.className="text";
+      var tt=document.createElement("div"); tt.className="t"; tt.textContent=t.text; s.appendChild(tt);
+      var dl=dueLabel(t);
+      if(pri(t)!==1||dl){
+        var m=document.createElement("div"); m.className="meta";
+        if(pri(t)===2){ var h=document.createElement("span"); h.className="hi"; h.textContent="High priority"; m.appendChild(h); }
+        if(pri(t)===0){ var l=document.createElement("span"); l.textContent="Low priority"; m.appendChild(l); }
+        if(dl){ var d2=document.createElement("span"); if(dl.late) d2.className="late"; d2.textContent=dl.text; m.appendChild(d2); }
+        s.appendChild(m);
+      }
+      var d=document.createElement("button"); d.className="del"; d.type="button"; d.innerHTML="&times;";
+      d.setAttribute("aria-label","Delete: "+t.text);
+      d.onclick=function(){ tasks=tasks.filter(function(x){return x!==t;}); save(); render(); };
+      var nm=document.createElement("span"); nm.className="num"; nm.textContent=(i+1)+"."; nm.setAttribute("aria-hidden","true");
+      li.appendChild(nm); li.appendChild(c); li.appendChild(s); li.appendChild(d); list.appendChild(li);
+    });
+    var left=tasks.filter(function(t){return !t.done;}).length;
+    document.getElementById("count").textContent = left+" left";
+    document.getElementById("sub").textContent = tasks.length ? (left? left+" to go" : "Everything is done") : "Nothing planned yet";
+    document.getElementById("clear").disabled = !tasks.some(function(t){return t.done;});
+  }
+  function add(){
+    var v=input.value.trim(); if(!v) return;
+    var dv=document.getElementById("due").value;
+    tasks.unshift({text:v,done:false,pri:parseInt(document.getElementById("pri").value,10),due:dv||""});
+    input.value=""; document.getElementById("due").value=""; document.getElementById("pri").value="1"; save(); render(); input.focus();
+  }
+  document.getElementById("addBtn").onclick=add;
+  input.addEventListener("keydown",function(e){ if(e.key==="Enter") add(); });
+  document.getElementById("clear").onclick=function(){ tasks=tasks.filter(function(t){return !t.done;}); save(); render(); };
+  document.querySelectorAll(".tabs button").forEach(function(b){
+    b.onclick=function(){
+      filter=b.dataset.f;
+      document.querySelectorAll(".tabs button").forEach(function(x){ x.setAttribute("aria-pressed", x===b?"true":"false"); });
+      render();
+    };
+  });
+  render();
+  if("serviceWorker" in navigator){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+})();
+</script>
+</body>
+</html>
