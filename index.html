@@ -31,7 +31,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
-main{max-width:520px;margin:0 auto;padding:20px 20px 96px}
+main{max-width:520px;margin:0 auto;padding:0 20px 96px}
 h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:0 0 2px;line-height:1.15}
 .sub{color:var(--muted);margin:0 0 14px;font-size:15px}
 .add{display:flex;gap:8px;align-items:stretch;margin-bottom:10px}
@@ -42,8 +42,6 @@ h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:0 0 2px;line-heig
 .opts label{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
 .opts select,.opts input{font:inherit;font-size:16px;height:44px;padding:0 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-width:0;width:100%}
 .opts select:focus,.opts input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
-li[data-p="2"]{box-shadow:inset 4px 0 0 var(--danger)}
-li[data-p="0"]{box-shadow:inset 4px 0 0 var(--line)}
 .meta{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:13px;color:var(--muted);margin-top:0;padding-bottom:0}
 .meta .hi{color:var(--danger);font-weight:600}
 .meta .late{color:var(--danger);font-weight:600}
@@ -65,9 +63,6 @@ li.done .t{color:var(--muted);text-decoration:line-through}
 .del:hover,.del:focus-visible{color:var(--danger)}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .empty{padding:28px 18px;text-align:center;color:var(--muted)}
-.foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:14px}
-.foot button{font:inherit;font-size:14px;font-weight:600;background:none;border:0;color:var(--ink);cursor:pointer;padding:10px 0}
-.foot button[disabled]{opacity:.35;cursor:default}
 .upd{display:flex;align-items:center;gap:12px;margin-top:26px;color:var(--muted);font-size:14px}
 .upd button{font:inherit;font-size:14px;padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .sheet{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.4);display:flex;align-items:flex-end}
@@ -93,7 +88,6 @@ ul.isEmpty{background:transparent;border:0;overflow:visible}
 .eh{font-size:19px;font-weight:600;color:var(--ink)}
 .ep{font-size:15px;color:var(--muted);margin-top:6px;line-height:1.4}
 .ego{margin-top:18px;font:inherit;font-weight:600;font-size:15px;padding:12px 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
-.foot[hidden]{display:none}
 .affhead{font-size:13px;color:var(--muted);margin:2px 0 10px}
 .affcard{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:14px 16px;margin-bottom:10px}
 .afftxt{font-size:16px;line-height:1.45;font-weight:600}
@@ -107,15 +101,51 @@ button:active{transform:scale(.96)}
 @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
 .check.pop{animation:pop .3s ease-out}
 @media (prefers-reduced-motion:reduce){.check.pop{animation:none}button:active{transform:none}#fab:active{transform:translateX(-50%)}}
+#hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:20px 0 8px}
+#hdr .tabs{margin-bottom:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.subrow{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}
+.subrow .sub{margin:0}
+#clear{flex:none;font:inherit;font-size:14px;font-weight:600;background:none;border:0;color:var(--ink);cursor:pointer;padding:12px 0 12px 14px;margin:-12px 0;border-radius:10px}
+#clear[hidden]{display:none}
+.tools{display:flex;align-items:center}
+#focusBtn{flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;border-radius:12px;cursor:pointer;padding:0}
+#focusBtn svg{width:22px;height:22px}
+.linkbtn{margin-top:12px;font:inherit;font-weight:600;font-size:15px;padding:10px 0;border:0;background:none;color:var(--accent);cursor:pointer}
+.linkbtn[hidden]{display:none}
+.fh{font-size:20px;font-weight:800;margin-bottom:12px}
+.flab{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.fsel{font:inherit;font-size:16px;height:44px;padding:0 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);width:100%;min-width:0}
+.fdur{display:flex;gap:8px;margin-top:14px}
+.fdur button{flex:1;height:60px;font:inherit;font-weight:700;font-size:18px;border-radius:14px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.fnote{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.4}
+#focus{position:fixed;inset:0;z-index:100;background:#000;color:#6a6a6a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;touch-action:manipulation}
+#focus[hidden]{display:none}
+#fclock{width:min(74vw,320px);height:auto}
+#ftitle{font-size:15px;color:#8a8a8a;text-align:center;max-width:90%;min-height:20px}
+#fleft{font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;color:#d8d8d8;min-height:40px;text-align:center}
+#fmsg{font-size:15px;color:#a8a8a8;min-height:20px;text-align:center}
+.ftog{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:15px}
+.ftog input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+#fctrl{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;min-height:48px}
+#fctrl[hidden]{visibility:hidden;display:flex}
+#fctrl button{font:inherit;font-size:15px;padding:12px 20px;border-radius:999px;border:1.5px solid #333;background:transparent;color:#a0a0a0;cursor:pointer}
 @media (max-width:360px){.add button{min-width:64px;padding:0 14px}.opts{gap:6px}.opts select,.opts input{padding:0 8px}}
 @media (prefers-reduced-motion:no-preference){.check{transition:background .15s,border-color .15s}}
 </style>
 </head>
 <body>
 <main>
-  <div class="top"><h1>To-do</h1><button id="upd" type="button" aria-label="Update app" title="Update app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button></div>
-  <p class="sub" id="sub"></p>
+  <header id="hdr">
+  <div class="top"><h1>To-do</h1><div class="tools"><button id="focusBtn" type="button" aria-label="Deep work timer" title="Deep work timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9.5 2.5h5"/></svg></button><button id="upd" type="button" aria-label="Update app" title="Update app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button></div></div>
+  <div class="subrow"><p class="sub" id="sub"></p><button id="clear" type="button" hidden>Clear done</button></div>
   <span id="updMsg" role="status"></span>
+  <div class="tabs" role="group" aria-label="Filter tasks">
+    <button type="button" data-f="today" aria-pressed="true">Today</button>
+    <button type="button" data-f="upcoming" aria-pressed="false">Upcoming</button>
+    <button type="button" data-f="affirmations" aria-pressed="false">Affirmations</button>
+  </div>
+  </header>
   <div class="sheet" id="sheet" hidden><div class="sheetbox"><div class="add">
     <input id="in" type="text" placeholder="Add a task" autocomplete="off" enterkeyhint="done" aria-label="New task">
     <button id="addBtn" type="button">Add</button>
@@ -128,20 +158,27 @@ button:active{transform:scale(.96)}
       <input id="due" type="date" aria-label="Due date">
     </label>
   </div>
+  <button type="button" id="focusFromTask" class="linkbtn" hidden>Start a focus session on this task</button>
   </div></div>
-  <div class="tabs" role="group" aria-label="Filter tasks">
-    <button type="button" data-f="today" aria-pressed="true">Today</button>
-    <button type="button" data-f="upcoming" aria-pressed="false">Upcoming</button>
-    <button type="button" data-f="affirmations" aria-pressed="false">Affirmations</button>
-  </div>
   <div id="affwrap" hidden></div>
   <ul id="list"></ul>
-  <div class="foot" id="foot">
-    <span id="count"></span>
-    <button id="clear" type="button">Clear done</button>
-  </div>
-  
-</main>
+  </main>
+<div class="sheet" id="fsheet" hidden><div class="sheetbox">
+  <div class="fh">Deep work</div>
+  <label class="flab">Task (optional)
+    <select id="ftask" class="fsel" aria-label="Task for this session"></select>
+  </label>
+  <div class="fdur"><button type="button" data-m="25">25 min</button><button type="button" data-m="50">50 min</button><button type="button" data-m="90">90 min</button></div>
+  <label class="ftog"><input type="checkbox" id="ftick"><span>Tick-tock sound, like an old clock</span></label>
+  <div class="fnote">The screen turns black and stays on. You get a nudge when 5 minutes are left. Tap the screen for controls.</div>
+</div></div>
+<div id="focus" hidden>
+  <div id="ftitle"></div>
+  <svg id="fclock" viewBox="0 0 200 200" aria-hidden="true"></svg>
+  <div id="fleft" role="status"></div>
+  <div id="fmsg" role="status"></div>
+  <div id="fctrl" hidden></div>
+</div>
 <button id="fab" type="button" aria-label="Add a task">+ Add task</button>
 <div id="toast" role="status" hidden><span id="toastMsg"></span><button id="toastUndo" type="button">Undo</button></div>
 <script>
@@ -199,9 +236,8 @@ button:active{transform:scale(.96)}
       li.appendChild(nm); li.appendChild(c); li.appendChild(s); li.appendChild(d); list.appendChild(li);
     });
     var left=tasks.filter(function(t){return !t.done;}).length;
-    document.getElementById("count").textContent = left+" left";
-    document.getElementById("sub").textContent = tasks.length ? (left? left+" to go" : "Everything is done") : "Nothing planned yet";
-    document.getElementById("clear").disabled = !tasks.some(function(t){return t.done;}); var isAff=filter==="affirmations"; list.hidden=isAff; document.getElementById("foot").hidden=isAff; document.getElementById("affwrap").hidden=!isAff; if(isAff) renderAff();
+        document.getElementById("sub").textContent = tasks.length ? (left? left+" to go" : "Everything is done") : "Nothing planned yet";
+    var isAff=filter==="affirmations"; document.getElementById("clear").hidden=isAff||!tasks.some(function(t){return t.done;}); list.hidden=isAff; document.getElementById("affwrap").hidden=!isAff; if(isAff) renderAff();
   }
   function add(){
     var v=input.value.trim(); if(!v) return;
@@ -225,9 +261,9 @@ button:active{transform:scale(.96)}
   sweep(); nextMidnight();
   var sheet=document.getElementById("sheet"), fab=document.getElementById("fab");
   var editing=null;
-  function openSheet(t){ editing=t||null; input.value=t?t.text:""; document.getElementById("due").value=t?(t.due||""):""; document.getElementById("pri").value=t?String(pri(t)):"1"; document.getElementById("addBtn").textContent=t?"Save":"Add"; input.placeholder=t?"Edit task":"Add a task"; sheet.hidden=false; fab.style.display="none"; setTimeout(function(){ input.focus(); },30); }
+  function openSheet(t){ editing=t||null; input.value=t?t.text:""; document.getElementById("due").value=t?(t.due||""):""; document.getElementById("pri").value=t?String(pri(t)):"1"; document.getElementById("addBtn").textContent=t?"Save":"Add"; document.getElementById("focusFromTask").hidden=!t; input.placeholder=t?"Edit task":"Add a task"; sheet.hidden=false; fab.style.display="none"; setTimeout(function(){ input.focus(); },30); }
   function closeSheet(){ sheet.hidden=true; fab.style.display=""; editing=null; }
-  fab.onclick=function(){ openSheet(); };
+  fab.onclick=function(){ if(filter==="affirmations"){ setFilter("today"); render(); } openSheet(); };
   document.addEventListener("pointerdown",function(e){ var b=e.target.closest&&e.target.closest("button"); if(!b||b.disabled) return; if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches) return; var r=b.getBoundingClientRect(), s=Math.max(r.width,r.height)*2, sp=document.createElement("span"); sp.className="ripple"; sp.style.width=sp.style.height=s+"px"; sp.style.left=(e.clientX-r.left-s/2)+"px"; sp.style.top=(e.clientY-r.top-s/2)+"px"; b.appendChild(sp); setTimeout(function(){ if(sp.parentNode) sp.parentNode.removeChild(sp); },600); });
   var AFF=["God is my unfailing supply, and large sums of money come to me quickly, under grace, in perfect ways.", "I have a perfect work in a perfect way; I give a perfect service for perfect pay.", "I am divinely sensitive to my intuitive leads, and give instant obedience to Thy will.", "My eyes are God's eyes, I see with the eyes of spirit. I see clearly the open way; there are no obstacles on my pathway. I see clearly the perfect plan.", "I cast this burden on the Christ within, and I go free!", "Every plan my Father in heaven has not planned, shall be dissolved and dissipated, and the Divine Idea now comes to pass.", "Only that which is true of God is true of me, for I and the Father are ONE.", "As I am one with God, I am one with my good, for God is both the Giver and the Gift. I cannot separate the Giver from the gift.", "Divine Love now dissolves and dissipates every wrong condition in my mind, body and affairs.", "Divine Love floods my consciousness with health, and every cell in my body is filled with light.", "My ears are God's ears, I hear with the ears of spirit. I am nonresistant and am willing to be led. I hear glad tidings of great joy.", "Infinite Spirit, open the way for the Divine Design of my life to manifest; let the genius within me now be released; let me see clearly the perfect plan.", "Infinite Spirit, open the way for my right home, my right friend, my right position. I give thanks it now manifests under grace in a perfect way.", "I am one with Infinite Intelligence. I know everything I should know on this subject.", "In Divine Mind there is only completion, therefore, my demonstration is completed. My perfect work, my perfect home, my perfect health.", "Infinite Spirit, give me a definite lead, reveal to me my perfect self-expression, show me which talent I am to make use of now.", "I am fully equipped for the Divine Plan of my life.", "I desire only that which God desires for me.", "Father, I'll take nothing less than I've asked for, but more!", "The simple rules are fearless faith, nonresistance and love!", "Infinite Spirit, open the way for my immediate supply, let all that is mine by divine right now reach me, in great avalanches of abundance.", "Infinite Spirit, reveal to me the way, let me know if there is anything for me to do.", "I am always under direct inspiration; I make right decisions, quickly.", "As one door shuts another door opens.", "I'll be that much richer, for God is my supply."];
   function weekIdx(){ var d=Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/864e5); return Math.floor((d+4)/7); }
@@ -238,6 +274,94 @@ button:active{transform:scale(.96)}
   document.getElementById("toastUndo").onclick=function(){ if(undoFn) undoFn(); undoFn=null; toast.hidden=true; clearTimeout(toastTimer); };
   sheet.addEventListener("click",function(e){ if(e.target===sheet) closeSheet(); });
   document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!sheet.hidden) closeSheet(); });
+
+  // ----- Deep work timer -----
+  var fcs=null, ftimer=null, fhide=null, flock=null, FKEY="todo-focus-v1", FC=578.05;
+  function setMeta(c){ try{ document.querySelector('meta[name="theme-color"]').setAttribute("content",c); }catch(e){} }
+  function lockOn(){ try{ if(navigator.wakeLock) navigator.wakeLock.request("screen").then(function(l){ flock=l; }).catch(function(){}); }catch(e){} }
+  function lockOff(){ try{ if(flock){ flock.release(); flock=null; } }catch(e){} }
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden&&fcs&&!fcs.done) lockOn(); });
+  var fac=null;
+  function getAC(){ try{ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; if(!fac) fac=new AC(); if(fac.state==="suspended") fac.resume(); return fac; }catch(e){ return null; } }
+  function beep(freq,dur,vol,dt){ try{ var c=getAC(); if(!c) return; var o=c.createOscillator(), g=c.createGain(), t0=c.currentTime+(dt||0); o.type="sine"; o.frequency.value=freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+.05); g.gain.exponentialRampToValueAtTime(.0001,t0+dur); o.start(t0); o.stop(t0+dur+.05); }catch(e){} }
+  function chime(){ beep(660,1.4,.25,0); }
+  var tickAlt=false, noiseBuf=null;
+  function clickSound(){ try{ var c=getAC(); if(!c) return; tickAlt=!tickAlt;
+    if(!noiseBuf||noiseBuf.sampleRate!==c.sampleRate){ var n=Math.floor(c.sampleRate*.06); noiseBuf=c.createBuffer(1,n,c.sampleRate); var d=noiseBuf.getChannelData(0); for(var i=0;i<n;i++){ d[i]=(Math.random()*2-1)*Math.exp(-i/(c.sampleRate*.006)); } }
+    var t0=c.currentTime, src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain();
+    src.buffer=noiseBuf; bp.type="bandpass"; bp.frequency.value=tickAlt?3000:2200; bp.Q.value=1.2; g.gain.value=tickAlt?1.6:1.3;
+    src.connect(bp); bp.connect(g); g.connect(c.destination); src.start(t0);
+    var o=c.createOscillator(), og=c.createGain(); o.type="sine"; o.frequency.value=tickAlt?950:760; og.gain.setValueAtTime(.35,t0); og.gain.exponentialRampToValueAtTime(.0001,t0+.045); o.connect(og); og.connect(c.destination); o.start(t0); o.stop(t0+.05);
+  }catch(e){} }
+  function buildClock(){
+    var s='<circle cx="100" cy="100" r="92" fill="none" stroke="#1d1d1d" stroke-width="3"/><circle id="fprog" cx="100" cy="100" r="92" fill="none" stroke="#d8d8d8" stroke-width="3" stroke-linecap="round" transform="rotate(-90 100 100)" stroke-dasharray="'+FC+' '+FC+'" stroke-dashoffset="0"/>';
+    for(var i=0;i<60;i++){ var a=i*6*Math.PI/180, big=i%5===0, r1=big?76:82, r2=86; s+='<line x1="'+(100+r1*Math.sin(a)).toFixed(2)+'" y1="'+(100-r1*Math.cos(a)).toFixed(2)+'" x2="'+(100+r2*Math.sin(a)).toFixed(2)+'" y2="'+(100-r2*Math.cos(a)).toFixed(2)+'" stroke="'+(big?"#bdbdbd":"#4a4a4a")+'" stroke-width="'+(big?3:1.5)+'" stroke-linecap="round"/>'; }
+    s+='<line id="fh" x1="100" y1="100" x2="100" y2="58" stroke="#f0f0f0" stroke-width="5" stroke-linecap="round"/><line id="fm" x1="100" y1="100" x2="100" y2="34" stroke="#f0f0f0" stroke-width="3.5" stroke-linecap="round"/><line id="fs" x1="100" y1="110" x2="100" y2="26" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/><circle cx="100" cy="100" r="4.5" fill="#f0f0f0"/>';
+    return s;
+  }
+  function fSave(){ try{ localStorage.setItem(FKEY,JSON.stringify({end:fcs.end,total:fcs.total,text:fcs.text})); }catch(e){} }
+  function pad2(n){ return (n<10?"0":"")+n; }
+  function warn5(){
+    vib([200,100,200]); beep(880,.5,.2,0); beep(880,.5,.2,.7);
+    var m=document.getElementById("fmsg"); m.textContent="5 minutes left"; setTimeout(function(){ if(m.textContent==="5 minutes left") m.textContent=""; },20000);
+  }
+  function fTick(){
+    if(!fcs||fcs.done) return;
+    var ms=fcs.end-Date.now(), rs=Math.max(0,Math.ceil(ms/1000)), es=Math.max(0,Math.round(fcs.total/1000)-rs), h=Math.floor(es/3600), m=Math.floor((es%3600)/60), sc=es%60, rh=Math.floor(rs/3600), rm=Math.floor((rs%3600)/60), rsec=rs%60;
+    document.getElementById("fh").setAttribute("transform","rotate("+((h+m/60)*30)+" 100 100)");
+    document.getElementById("fm").setAttribute("transform","rotate("+((m+sc/60)*6)+" 100 100)");
+    document.getElementById("fs").setAttribute("transform","rotate("+(sc*6)+" 100 100)");
+    var fr=Math.max(0,Math.min(1,ms/fcs.total)); document.getElementById("fprog").setAttribute("stroke-dashoffset",String(FC*fr));
+    if(ms<=0){ fComplete(); return; }
+    document.getElementById("fleft").textContent = rh>0 ? rh+":"+pad2(rm)+":"+pad2(rsec) : pad2(rm)+":"+pad2(rsec);
+    if(ms<=300000){ if(!fcs.warned){ fcs.warned=true; if(fcs.total>300000&&ms>240000) warn5(); } }
+  }
+  function fSecond(){ fTick(); if(fcs&&!fcs.done&&fcs.tick) clickSound(); }
+  function findFocusTask(){ if(!fcs||!fcs.text) return null; return tasks.filter(function(x){ return !x.done&&x.text===fcs.text; })[0]||null; }
+  function showCtrl(done){
+    var c=document.getElementById("fctrl"); c.innerHTML="";
+    function mk(txt,fn){ var b=document.createElement("button"); b.type="button"; b.textContent=txt; b.onclick=function(e){ e.stopPropagation(); fn(); }; c.appendChild(b); }
+    if(done){ var tk=findFocusTask(); if(tk) mk("Mark task done",function(){ tk.done=true; tk.doneAt=todayStr(); save(); endFocus(); render(); }); mk("Close",endFocus); }
+    else { mk("+5 min",function(){ fcs.end+=5*60000; fcs.total+=5*60000; fcs.warned=false; document.getElementById("fmsg").textContent=""; fSave(); fTick(); showCtrl(false); }); mk("Tick sound: "+(fcs.tick?"on":"off"),function(){ fcs.tick=!fcs.tick; try{ localStorage.setItem("todo-focus-tick",fcs.tick?"1":"0"); document.getElementById("ftick").checked=fcs.tick; }catch(e){} showCtrl(false); }); mk("End session",endFocus); }
+    c.hidden=false; clearTimeout(fhide); if(!done) fhide=setTimeout(function(){ c.hidden=true; },4000);
+  }
+  function fComplete(){
+    clearInterval(ftimer); fcs.done=true; try{ localStorage.removeItem(FKEY); }catch(e){}
+    lockOff(); vib([300,150,300,150,300]); chime();
+    document.getElementById("fprog").setAttribute("stroke-dashoffset","0");
+    document.getElementById("fleft").textContent="Done"; document.getElementById("fmsg").textContent="Session complete. Well done.";
+    showCtrl(true);
+  }
+  function endFocus(){
+    clearInterval(ftimer); clearTimeout(fhide); fcs=null; try{ localStorage.removeItem(FKEY); }catch(e){}
+    document.getElementById("focus").hidden=true; lockOff(); setMeta("#1F6F5C");
+    try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){}
+  }
+  function startFocus(total,text,endAt){
+    fcs={end:endAt||Date.now()+total,total:total,text:text||"",done:false,warned:false,tick:!!document.getElementById("ftick").checked}; fSave(); getAC(); document.getElementById("fmsg").textContent="";
+    closeFocusSheet(); document.getElementById("ftitle").textContent=fcs.text;
+    document.getElementById("fclock").innerHTML=buildClock();
+    var c=document.getElementById("fctrl"); c.innerHTML=""; c.hidden=true;
+    document.getElementById("focus").hidden=false; lockOn(); setMeta("#000000");
+    try{ var el=document.documentElement; if(el.requestFullscreen) el.requestFullscreen().catch(function(){}); }catch(e){}
+    clearInterval(ftimer); ftimer=setInterval(fSecond,1000); fTick();
+  }
+  function openFocus(t){
+    var sel=document.getElementById("ftask"); sel.innerHTML="";
+    var o0=document.createElement("option"); o0.value="-1"; o0.textContent="No specific task"; sel.appendChild(o0);
+    tasks.forEach(function(x,i){ if(!x.done){ var o=document.createElement("option"); o.value=String(i); o.textContent=x.text.length>40?x.text.slice(0,40)+"\u2026":x.text; sel.appendChild(o); } });
+    if(t){ var i=tasks.indexOf(t); if(i>=0) sel.value=String(i); }
+    document.getElementById("fsheet").hidden=false; fab.style.display="none";
+  }
+  function closeFocusSheet(){ document.getElementById("fsheet").hidden=true; fab.style.display=""; }
+  document.getElementById("focusBtn").onclick=function(){ openFocus(); };
+  document.getElementById("focusFromTask").onclick=function(){ var t=editing; closeSheet(); openFocus(t); };
+  document.querySelectorAll("#fsheet .fdur button").forEach(function(b){ b.onclick=function(){ var i=parseInt(document.getElementById("ftask").value,10); startFocus(parseInt(b.dataset.m,10)*60000, (i>=0&&tasks[i])?tasks[i].text:""); }; });
+  document.getElementById("fsheet").addEventListener("click",function(e){ if(e.target.id==="fsheet") closeFocusSheet(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!document.getElementById("fsheet").hidden) closeFocusSheet(); });
+  document.getElementById("focus").addEventListener("click",function(){ if(!fcs||fcs.done) return; var c=document.getElementById("fctrl"); if(c.hidden) showCtrl(false); else c.hidden=true; });
+  (function(){ var tk=document.getElementById("ftick"); tk.checked=true; try{ tk.checked=localStorage.getItem("todo-focus-tick")!=="0"; }catch(e){} tk.onchange=function(){ try{ localStorage.setItem("todo-focus-tick",tk.checked?"1":"0"); }catch(e){} }; })();
+  try{ var sv=JSON.parse(localStorage.getItem(FKEY)||"null"); if(sv&&sv.end>Date.now()) startFocus(sv.total,sv.text,sv.end); else if(sv) localStorage.removeItem(FKEY); }catch(e){}
   render();
   var um=document.getElementById("updMsg");
   try{ if(sessionStorage.getItem("updated")){ sessionStorage.removeItem("updated"); um.textContent="Updated. You have the latest version."; setTimeout(function(){ um.textContent=""; },4000); } }catch(e){}
