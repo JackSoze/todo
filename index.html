@@ -119,17 +119,22 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fdur{display:flex;gap:8px;margin-top:14px}
 .fdur button{flex:1;height:60px;font:inherit;font-weight:700;font-size:18px;border-radius:14px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer}
 .fnote{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.4}
-#focus{position:fixed;inset:0;z-index:100;background:#000;color:#6a6a6a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;touch-action:manipulation}
+#focus{position:fixed;inset:0;z-index:100;background:#000;color:#6a6a6a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px 24px 175px;touch-action:manipulation}
 #focus[hidden]{display:none}
-#fclock{width:min(74vw,320px);height:auto}
+#fclock{width:min(68vw,300px);height:auto}
 #ftitle{font-size:15px;color:#8a8a8a;text-align:center;max-width:90%;min-height:20px}
 #fleft{font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;color:#d8d8d8;min-height:40px;text-align:center}
 #fmsg{font-size:15px;color:#a8a8a8;min-height:20px;text-align:center}
 .ftog{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:15px}
 .ftog input{width:22px;height:22px;accent-color:var(--accent);flex:none}
-#fctrl{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;min-height:48px}
+#fctrl{position:absolute;left:12px;right:12px;bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 #fctrl[hidden]{visibility:hidden;display:flex}
-#fctrl button{font:inherit;font-size:15px;padding:12px 20px;border-radius:999px;border:1.5px solid #333;background:transparent;color:#a0a0a0;cursor:pointer}
+#fctrl button{font:inherit;font-size:14px;padding:11px 16px;border-radius:999px;border:1.5px solid #333;background:transparent;color:#a0a0a0;cursor:pointer}#fctrl button.on{border-color:#8a8a8a;color:#e6e6e6}
+#fquote{font-size:15px;line-height:1.45;color:#8a8a8a;text-align:center;max-width:88%;min-height:44px;transition:opacity .3s}
+#fqby{font-size:12px;color:#5c5c5c;text-align:center;margin-top:-10px}
+#fbanner{margin:0 0 8px;width:100%;font:inherit;font-weight:600;font-size:13px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;text-align:center}
+#fbanner[hidden]{display:none}
+#fkeep{position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none}
 @media (max-width:360px){.add button{min-width:64px;padding:0 14px}.opts{gap:6px}.opts select,.opts input{padding:0 8px}}
 @media (prefers-reduced-motion:no-preference){.check{transition:background .15s,border-color .15s}}
 </style>
@@ -140,6 +145,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   <div class="top"><h1>To-do</h1><div class="tools"><button id="focusBtn" type="button" aria-label="Deep work timer" title="Deep work timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9.5 2.5h5"/></svg></button><button id="upd" type="button" aria-label="Update app" title="Update app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button></div></div>
   <div class="subrow"><p class="sub" id="sub"></p><button id="clear" type="button" hidden>Clear done</button></div>
   <span id="updMsg" role="status"></span>
+  <button id="fbanner" type="button" hidden></button>
   <div class="tabs" role="group" aria-label="Filter tasks">
     <button type="button" data-f="today" aria-pressed="true">Today</button>
     <button type="button" data-f="upcoming" aria-pressed="false">Upcoming</button>
@@ -170,14 +176,17 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </label>
   <div class="fdur"><button type="button" data-m="25">25 min</button><button type="button" data-m="50">50 min</button><button type="button" data-m="90">90 min</button></div>
   <label class="ftog"><input type="checkbox" id="ftick"><span>Tick-tock sound, like an old clock</span></label>
-  <div class="fnote">The screen turns black and stays on. You get a nudge when 5 minutes are left. Tap the screen for controls.</div>
+  <div class="fnote">The screen turns black. You get a nudge when 5 minutes are left. Tap the screen for Pause, Keep screen on and Do not disturb.</div>
 </div></div>
 <div id="focus" hidden>
   <div id="ftitle"></div>
   <svg id="fclock" viewBox="0 0 200 200" aria-hidden="true"></svg>
   <div id="fleft" role="status"></div>
   <div id="fmsg" role="status"></div>
+  <div id="fquote"></div>
+  <div id="fqby">Idea from Deep Work by Cal Newport (paraphrased)</div>
   <div id="fctrl" hidden></div>
+  <video id="fkeep" muted playsinline loop aria-hidden="true"><source src="data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwEAAAAAAAI/EU2bdLpNu4tTq4QVSalmU6yBoU27i1OrhBZUrmtTrIHYTbuMU6uEElTDZ1OsggEeTbuMU6uEHFO7a1OsggIp7AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmsirXsYMPQkBNgI1MYXZmNjAuMTYuMTAwV0GNTGF2ZjYwLjE2LjEwMESJiECPQAAAAAAAFlSua8GuAQAAAAAAADjXgQFzxYgUNUzWCaQwiJyBACK1nIN1bmSIgQCGhVZfVlA4g4EBI+ODhAvrwgDgibCBELqBEJqBAhJUw2f8c3OgY8CAZ8iaRaOHRU5DT0RFUkSHjUxhdmY2MC4xNi4xMDBzc9ZjwItjxYgUNUzWCaQwiGfIoUWjh0VOQ09ERVJEh5RMYXZjNjAuMzEuMTAyIGxpYnZweGfIoUWjiERVUkFUSU9ORIeTMDA6MDA6MDEuMDAwMDAwMDAwAB9DtnVAhOeBAKOjgQAAgBACAJ0BKhAAEAAARwiFhYiFhIgCAgAMDWAA/v+rUICjlYEAyACxAQABEBAAGAAYWC/0AAgAAKOVgQGQALEBAAEQEAAYABhYL/QACAAAo5WBAlgAsQEAARAQABgAGFgv9AAIAACjlYEDIACxAQABEBAAGAAYWC/0AAgAABxTu2uRu4+zgQC3iveBAfGCAZ/wgQM=" type="video/webm"><source src="data:video/mp4;base64,AAAAJGZ0eXBpc29tAAACAGlzb21pc282aXNvMmF2YzFtcDQxAAAC521vb3YAAABsbXZoZAAAAAAAAAAAAAAAAAAAA+gAAAAAAAEAAAEAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAHpdHJhawAAAFx0a2hkAAAAAwAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAQAAAAAAQAAAAEAAAAAABhW1kaWEAAAAgbWRoZAAAAAAAAAAAAAAAAAAAKAAAAAAAVcQAAAAAAC1oZGxyAAAAAAAAAAB2aWRlAAAAAAAAAAAAAAAAVmlkZW9IYW5kbGVyAAAAATBtaW5mAAAAFHZtaGQAAAABAAAAAAAAAAAAAAAkZGluZgAAABxkcmVmAAAAAAAAAAEAAAAMdXJsIAAAAAEAAADwc3RibAAAAKRzdHNkAAAAAAAAAAEAAACUYXZjMQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAQABAASAAAAEgAAAAAAAAAARVMYXZjNjAuMzEuMTAyIGxpYngyNjQAAAAAAAAAAAAAABj//wAAAC5hdmNDAULACv/hABZnQsAK2R7ARAAAAwAEAAADACg8SJkgAQAFaMuDyyAAAAAQcGFzcAAAAAEAAAABAAAAEHN0dHMAAAAAAAAAAAAAABBzdHNjAAAAAAAAAAAAAAAUc3RzegAAAAAAAAAAAAAAAAAAABBzdGNvAAAAAAAAAAAAAAAobXZleAAAACB0cmV4AAAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAYnVkdGEAAABabWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY2MC4xNi4xMDAAAACEbW9vZgAAABBtZmhkAAAAAAAAAAEAAABsdHJhZgAAACR0ZmhkAAAAOQAAAAEAAAAAAAADCwAACAAAAAKDAQEAAAAAABR0ZmR0AQAAAAAAAAAAAAAAAAAALHRydW4AAAIFAAAABQAAAIwCAAAAAAACgwAAAAoAAAAKAAAACQAAAAkAAAKxbWRhdAAAAnAGBf//bNxF6b3m2Ui3lizYINkj7u94MjY0IC0gY29yZSAxNjQgcjMxMDggMzFlMTlmOSAtIEguMjY0L01QRUctNCBBVkMgY29kZWMgLSBDb3B5bGVmdCAyMDAzLTIwMjMgLSBodHRwOi8vd3d3LnZpZGVvbGFuLm9yZy94MjY0Lmh0bWwgLSBvcHRpb25zOiBjYWJhYz0wIHJlZj0zIGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDE6MHgxMTEgbWU9aGV4IHN1Ym1lPTcgcHN5PTEgcHN5X3JkPTEuMDA6MC4wMCBtaXhlZF9yZWY9MSBtZV9yYW5nZT0xNiBjaHJvbWFfbWU9MSB0cmVsbGlzPTEgOHg4ZGN0PTAgY3FtPTAgZGVhZHpvbmU9MjEsMTEgZmFzdF9wc2tpcD0xIGNocm9tYV9xcF9vZmZzZXQ9LTIgdGhyZWFkcz0xIGxvb2thaGVhZF90aHJlYWRzPTEgc2xpY2VkX3RocmVhZHM9MCBucj0wIGRlY2ltYXRlPTEgaW50ZXJsYWNlZD0wIGJsdXJheV9jb21wYXQ9MCBjb25zdHJhaW5lZF9pbnRyYT0wIGJmcmFtZXM9MCB3ZWlnaHRwPTAga2V5aW50PTI1MCBrZXlpbnRfbWluPTUgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjAwAIAAAAALZYiEBHyYoAA2I4AAAAAGQZo4CPqAAAAABkGaVAI+oAAAAAVBmmAQ9QAAAAVBmoA/1AAAAENtZnJhAAAAK3RmcmEBAAAAAAAAAQAAAAAAAAABAAAAAAAAAAAAAAAAAAADCwEBAQAAABBtZnJvAAAAAAAAAEM=" type="video/mp4"></video>
 </div>
 <button id="fab" type="button" aria-label="Add a task">+ Add task</button>
 <div id="toast" role="status" hidden><span id="toastMsg"></span><button id="toastUndo" type="button">Undo</button></div>
@@ -277,16 +286,41 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
   // ----- Deep work timer -----
   var fcs=null, ftimer=null, fhide=null, flock=null, FKEY="todo-focus-v1", FC=578.05;
+  var Q=["Quality of work comes from time spent multiplied by how intensely you focus.", "A short stretch of full focus can beat long hours of distracted effort.", "Deep, distraction-free effort is rare, and that is exactly why it is valuable.", "Decide your rules for depth ahead of time: where, for how long, and what you will leave out.", "Treat boredom as practice. Learn not to reach for your phone the moment something gets dull.", "Concentration is a skill like a muscle. It grows with regular, deliberate training.", "Plan the day in blocks, and rework the plan when interruptions hit.", "Say no to many shallow tasks so the important ones get your best hours.", "Pick a few big goals and track the daily hours you put into them.", "A visible scoreboard of deep hours keeps you honest and motivated.", "Build a ritual: the same place, the same start signal and the same supplies before each session.", "A clear end-of-day shutdown lets your mind rest, so tomorrow's focus is better.", "Truly unplugged time away from work helps good ideas form.", "Attention given to scattered tasks leaves a residue that follows you into the next one.", "Finish one thing before switching. Switching leaves part of your mind behind.", "Be deliberate about shallow work: batch it, limit it, and keep it from spilling over.", "A small, clear aim for each session beats a vague plan to work hard.", "People who produce rare and valuable work do it by going deep again and again.", "Give your best hours to your hardest task.", "You do not need perfect conditions. Start the session and let the focus build."];
+  function fmtLeft(ms){ var rs=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(rs/3600), m=Math.floor((rs%3600)/60), sc=rs%60; return (h>0?h+":"+pad2(m):pad2(m))+":"+pad2(sc); }
+  function updBanner(){ var b=document.getElementById("fbanner"); if(!fcs||fcs.done||!document.getElementById("focus").hidden){ b.hidden=true; return; } b.hidden=false; b.textContent=(fcs.paused?"Deep work paused \u00b7 ":"Deep work \u00b7 ")+fmtLeft(fcs.end-(fcs.paused||Date.now()))+" left \u00b7 tap to return"; }
+  function showFocusScreen(push){
+    document.getElementById("focus").hidden=false; document.getElementById("fbanner").hidden=true; lockOn(); setMeta("#000000");
+    try{ var el=document.documentElement; if(el.requestFullscreen&&!document.fullscreenElement) el.requestFullscreen().catch(function(){}); }catch(e){}
+    fTick();
+  }
+  function minimizeFocus(){ document.getElementById("focus").hidden=true; lockOff(); setMeta("#1F6F5C"); try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){} updBanner(); }
+  document.getElementById("fbanner").onclick=function(){ if(fcs&&!fcs.done) showFocusScreen(); };
+  // ----- Back button: always stay in the app and land on Today; exit only from Today -----
+  function handleBack(){
+    var fo=document.getElementById("focus"), fsh=document.getElementById("fsheet");
+    if(!fo.hidden){ if(fcs&&fcs.done) endFocus(); else minimizeFocus(); closeSheet(); setFilter("today"); render(); return true; }
+    if(!fsh.hidden){ closeFocusSheet(); setFilter("today"); render(); return true; }
+    if(!sheet.hidden){ closeSheet(); return true; }
+    if(filter!=="today"){ setFilter("today"); render(); return true; }
+    return false;
+  }
+  try{ history.replaceState({base:1},""); history.pushState({guard:1},""); }catch(e){}
+  window.addEventListener("popstate",function(){ if(handleBack()){ try{ history.pushState({guard:1},""); }catch(e){} } else { try{ history.back(); }catch(e){} } });
+  document.addEventListener("fullscreenchange",function(){ if(!document.fullscreenElement&&!document.getElementById("focus").hidden){ handleBack(); } });
   function setMeta(c){ try{ document.querySelector('meta[name="theme-color"]').setAttribute("content",c); }catch(e){} }
-  function lockOn(){ try{ if(navigator.wakeLock) navigator.wakeLock.request("screen").then(function(l){ flock=l; }).catch(function(){}); }catch(e){} }
-  function lockOff(){ try{ if(flock){ flock.release(); flock=null; } }catch(e){} }
-  document.addEventListener("visibilitychange",function(){ if(!document.hidden&&fcs&&!fcs.done) lockOn(); });
+  function keepVideo(on){ try{ var v=document.getElementById("fkeep"); if(!v) return; if(on){ var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } else v.pause(); }catch(e){} }
+  var awakeOn=true, dndOn=false;
+  try{ awakeOn=localStorage.getItem("todo-focus-awake")!=="0"; dndOn=localStorage.getItem("todo-focus-dnd")==="1"; }catch(e){}
+  function lockOn(){ if(!awakeOn) return; keepVideo(true); try{ if(navigator.wakeLock&&!flock) navigator.wakeLock.request("screen").then(function(l){ flock=l; l.addEventListener("release",function(){ if(flock===l) flock=null; }); }).catch(function(){}); }catch(e){} }
+  function lockOff(){ keepVideo(false); try{ if(flock){ flock.release(); flock=null; } }catch(e){} }
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden&&fcs){ if(!fcs.done&&!document.getElementById("focus").hidden) lockOn(); fTick(); updBanner(); } });
   var fac=null;
   function getAC(){ try{ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; if(!fac) fac=new AC(); if(fac.state==="suspended") fac.resume(); return fac; }catch(e){ return null; } }
-  function beep(freq,dur,vol,dt){ try{ var c=getAC(); if(!c) return; var o=c.createOscillator(), g=c.createGain(), t0=c.currentTime+(dt||0); o.type="sine"; o.frequency.value=freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+.05); g.gain.exponentialRampToValueAtTime(.0001,t0+dur); o.start(t0); o.stop(t0+dur+.05); }catch(e){} }
+  function beep(freq,dur,vol,dt){ if(dndOn) return; try{ var c=getAC(); if(!c) return; var o=c.createOscillator(), g=c.createGain(), t0=c.currentTime+(dt||0); o.type="sine"; o.frequency.value=freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+.05); g.gain.exponentialRampToValueAtTime(.0001,t0+dur); o.start(t0); o.stop(t0+dur+.05); }catch(e){} }
   function chime(){ beep(660,1.4,.25,0); }
   var tickAlt=false, noiseBuf=null;
-  function clickSound(){ try{ var c=getAC(); if(!c) return; tickAlt=!tickAlt;
+  function clickSound(){ if(dndOn) return; try{ var c=getAC(); if(!c) return; tickAlt=!tickAlt;
     if(!noiseBuf||noiseBuf.sampleRate!==c.sampleRate){ var n=Math.floor(c.sampleRate*.06); noiseBuf=c.createBuffer(1,n,c.sampleRate); var d=noiseBuf.getChannelData(0); for(var i=0;i<n;i++){ d[i]=(Math.random()*2-1)*Math.exp(-i/(c.sampleRate*.006)); } }
     var t0=c.currentTime, src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain();
     src.buffer=noiseBuf; bp.type="bandpass"; bp.frequency.value=tickAlt?3000:2200; bp.Q.value=1.2; g.gain.value=tickAlt?1.6:1.3;
@@ -299,52 +333,72 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     s+='<line id="fh" x1="100" y1="100" x2="100" y2="58" stroke="#f0f0f0" stroke-width="5" stroke-linecap="round"/><line id="fm" x1="100" y1="100" x2="100" y2="34" stroke="#f0f0f0" stroke-width="3.5" stroke-linecap="round"/><line id="fs" x1="100" y1="110" x2="100" y2="26" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/><circle cx="100" cy="100" r="4.5" fill="#f0f0f0"/>';
     return s;
   }
-  function fSave(){ try{ localStorage.setItem(FKEY,JSON.stringify({end:fcs.end,total:fcs.total,text:fcs.text})); }catch(e){} }
+  function fSave(){ try{ localStorage.setItem(FKEY,JSON.stringify({end:fcs.end,total:fcs.total,text:fcs.text,qi:fcs.qi,paused:fcs.paused||0})); }catch(e){} }
   function pad2(n){ return (n<10?"0":"")+n; }
   function warn5(){
-    vib([200,100,200]); beep(880,.5,.2,0); beep(880,.5,.2,.7);
+    if(!dndOn) vib([200,100,200]); beep(880,.5,.2,0); beep(880,.5,.2,.7);
     var m=document.getElementById("fmsg"); m.textContent="5 minutes left"; setTimeout(function(){ if(m.textContent==="5 minutes left") m.textContent=""; },20000);
   }
   function fTick(){
     if(!fcs||fcs.done) return;
-    var ms=fcs.end-Date.now(), rs=Math.max(0,Math.ceil(ms/1000)), es=Math.max(0,Math.round(fcs.total/1000)-rs), h=Math.floor(es/3600), m=Math.floor((es%3600)/60), sc=es%60, rh=Math.floor(rs/3600), rm=Math.floor((rs%3600)/60), rsec=rs%60;
+    var ms=fcs.end-(fcs.paused||Date.now()), rs=Math.max(0,Math.ceil(ms/1000)), es=Math.max(0,Math.round(fcs.total/1000)-rs), h=Math.floor(es/3600), m=Math.floor((es%3600)/60), sc=es%60, rh=Math.floor(rs/3600), rm=Math.floor((rs%3600)/60), rsec=rs%60;
     document.getElementById("fh").setAttribute("transform","rotate("+((h+m/60)*30)+" 100 100)");
     document.getElementById("fm").setAttribute("transform","rotate("+((m+sc/60)*6)+" 100 100)");
     document.getElementById("fs").setAttribute("transform","rotate("+(sc*6)+" 100 100)");
+    var qn=(fcs.qi+Math.floor(es/1800))%Q.length; if(fcs.qshown!==qn){ var first=(fcs.qshown===undefined); fcs.qshown=qn; var qe=document.getElementById("fquote"); if(first){ qe.textContent=Q[qn]; } else { qe.style.opacity=0; setTimeout(function(){ qe.textContent=Q[qn]; qe.style.opacity=1; },300); } }
     var fr=Math.max(0,Math.min(1,ms/fcs.total)); document.getElementById("fprog").setAttribute("stroke-dashoffset",String(FC*fr));
     if(ms<=0){ fComplete(); return; }
     document.getElementById("fleft").textContent = rh>0 ? rh+":"+pad2(rm)+":"+pad2(rsec) : pad2(rm)+":"+pad2(rsec);
-    if(ms<=300000){ if(!fcs.warned){ fcs.warned=true; if(fcs.total>300000&&ms>240000) warn5(); } }
+    if(ms<=300000&&!fcs.paused){ if(!fcs.warned){ fcs.warned=true; if(fcs.total>300000&&ms>240000) warn5(); } }
   }
-  function fSecond(){ fTick(); if(fcs&&!fcs.done&&fcs.tick) clickSound(); }
+  function fSecond(){ fTick(); updBanner(); if(fcs&&!fcs.done&&!document.getElementById("focus").hidden&&!flock&&!document.hidden&&Math.floor(Date.now()/1000)%10===0) lockOn(); if(fcs&&!fcs.done&&!fcs.paused&&fcs.tick&&!document.getElementById("focus").hidden) clickSound(); }
   function findFocusTask(){ if(!fcs||!fcs.text) return null; return tasks.filter(function(x){ return !x.done&&x.text===fcs.text; })[0]||null; }
+  function setMsg(t){ document.getElementById("fmsg").textContent=t; }
+  function togglePause(){
+    if(!fcs||fcs.done) return;
+    if(fcs.paused){ fcs.end+=Date.now()-fcs.paused; fcs.paused=0; if(document.getElementById("fmsg").textContent==="Paused") setMsg(""); }
+    else { fcs.paused=Date.now(); setMsg("Paused"); }
+    fSave(); fTick(); updBanner(); showCtrl(false);
+  }
+  function toggleAwake(){
+    awakeOn=!awakeOn; try{ localStorage.setItem("todo-focus-awake",awakeOn?"1":"0"); }catch(e){}
+    if(awakeOn) lockOn(); else lockOff();
+    showCtrl(false);
+  }
+  function toggleDnd(){
+    dndOn=!dndOn; try{ localStorage.setItem("todo-focus-dnd",dndOn?"1":"0"); }catch(e){}
+    var t=dndOn?"Quiet mode on: no sounds or vibration. For calls and WhatsApp, also turn on your phone's Do Not Disturb (swipe down from the top).":"Quiet mode off";
+    setMsg(t); setTimeout(function(){ if(document.getElementById("fmsg").textContent===t) setMsg(fcs&&fcs.paused?"Paused":""); },9000);
+    showCtrl(false);
+  }
   function showCtrl(done){
     var c=document.getElementById("fctrl"); c.innerHTML="";
     function mk(txt,fn){ var b=document.createElement("button"); b.type="button"; b.textContent=txt; b.onclick=function(e){ e.stopPropagation(); fn(); }; c.appendChild(b); }
     if(done){ var tk=findFocusTask(); if(tk) mk("Mark task done",function(){ tk.done=true; tk.doneAt=todayStr(); save(); endFocus(); render(); }); mk("Close",endFocus); }
-    else { mk("+5 min",function(){ fcs.end+=5*60000; fcs.total+=5*60000; fcs.warned=false; document.getElementById("fmsg").textContent=""; fSave(); fTick(); showCtrl(false); }); mk("Tick sound: "+(fcs.tick?"on":"off"),function(){ fcs.tick=!fcs.tick; try{ localStorage.setItem("todo-focus-tick",fcs.tick?"1":"0"); document.getElementById("ftick").checked=fcs.tick; }catch(e){} showCtrl(false); }); mk("End session",endFocus); }
-    c.hidden=false; clearTimeout(fhide); if(!done) fhide=setTimeout(function(){ c.hidden=true; },4000);
+    else { mk(fcs.paused?"Resume":"Pause",togglePause); mk("+5 min",function(){ fcs.end+=5*60000; fcs.total+=5*60000; fcs.warned=false; document.getElementById("fmsg").textContent=""; fSave(); fTick(); showCtrl(false); }); mk("Tick sound: "+(fcs.tick?"on":"off"),function(){ fcs.tick=!fcs.tick; try{ localStorage.setItem("todo-focus-tick",fcs.tick?"1":"0"); document.getElementById("ftick").checked=fcs.tick; }catch(e){} showCtrl(false); }); mk("Screen on: "+(awakeOn?"yes":"no"),toggleAwake); c.lastChild.className=awakeOn?"on":""; mk("Do not disturb: "+(dndOn?"on":"off"),toggleDnd); c.lastChild.className=dndOn?"on":""; mk("End session",endFocus); }
+    c.hidden=false; clearTimeout(fhide); if(!done) fhide=setTimeout(function(){ c.hidden=true; },6000);
   }
   function fComplete(){
     clearInterval(ftimer); fcs.done=true; try{ localStorage.removeItem(FKEY); }catch(e){}
-    lockOff(); vib([300,150,300,150,300]); chime();
+    if(document.getElementById("focus").hidden){ document.getElementById("focus").hidden=false; document.getElementById("fbanner").hidden=true; setMeta("#000000"); }
+    lockOff(); if(!dndOn) vib([300,150,300,150,300]); chime();
     document.getElementById("fprog").setAttribute("stroke-dashoffset","0");
     document.getElementById("fleft").textContent="Done"; document.getElementById("fmsg").textContent="Session complete. Well done.";
     showCtrl(true);
   }
-  function endFocus(){
+  function endFocus(fromPop){
     clearInterval(ftimer); clearTimeout(fhide); fcs=null; try{ localStorage.removeItem(FKEY); }catch(e){}
-    document.getElementById("focus").hidden=true; lockOff(); setMeta("#1F6F5C");
+    var shown=!document.getElementById("focus").hidden;
+    document.getElementById("focus").hidden=true; document.getElementById("fbanner").hidden=true; lockOff(); setMeta("#1F6F5C");
     try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){}
   }
-  function startFocus(total,text,endAt){
-    fcs={end:endAt||Date.now()+total,total:total,text:text||"",done:false,warned:false,tick:!!document.getElementById("ftick").checked}; fSave(); getAC(); document.getElementById("fmsg").textContent="";
+  function startFocus(total,text,endAt,qi,paused){
+    fcs={end:endAt||Date.now()+total,total:total,text:text||"",done:false,warned:false,paused:paused||0,tick:!!document.getElementById("ftick").checked,qi:(typeof qi==="number")?qi:Math.floor(Math.random()*Q.length)}; fSave(); getAC(); document.getElementById("fmsg").textContent="";
     closeFocusSheet(); document.getElementById("ftitle").textContent=fcs.text;
     document.getElementById("fclock").innerHTML=buildClock();
     var c=document.getElementById("fctrl"); c.innerHTML=""; c.hidden=true;
-    document.getElementById("focus").hidden=false; lockOn(); setMeta("#000000");
-    try{ var el=document.documentElement; if(el.requestFullscreen) el.requestFullscreen().catch(function(){}); }catch(e){}
-    clearInterval(ftimer); ftimer=setInterval(fSecond,1000); fTick();
+    clearInterval(ftimer); ftimer=setInterval(fSecond,1000);
+    showFocusScreen();
   }
   function openFocus(t){
     var sel=document.getElementById("ftask"); sel.innerHTML="";
@@ -361,7 +415,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!document.getElementById("fsheet").hidden) closeFocusSheet(); });
   document.getElementById("focus").addEventListener("click",function(){ if(!fcs||fcs.done) return; var c=document.getElementById("fctrl"); if(c.hidden) showCtrl(false); else c.hidden=true; });
   (function(){ var tk=document.getElementById("ftick"); tk.checked=true; try{ tk.checked=localStorage.getItem("todo-focus-tick")!=="0"; }catch(e){} tk.onchange=function(){ try{ localStorage.setItem("todo-focus-tick",tk.checked?"1":"0"); }catch(e){} }; })();
-  try{ var sv=JSON.parse(localStorage.getItem(FKEY)||"null"); if(sv&&sv.end>Date.now()) startFocus(sv.total,sv.text,sv.end); else if(sv) localStorage.removeItem(FKEY); }catch(e){}
+  try{ var sv=JSON.parse(localStorage.getItem(FKEY)||"null"); if(sv&&(sv.paused?sv.paused>Date.now()-12*3600000:sv.end>Date.now()-6*3600000)){ startFocus(sv.total,sv.text,sv.end,sv.qi,sv.paused); if(sv.paused) setMsg("Paused"); } else if(sv) localStorage.removeItem(FKEY); }catch(e){}
   render();
   var um=document.getElementById("updMsg");
   try{ if(sessionStorage.getItem("updated")){ sessionStorage.removeItem("updated"); um.textContent="Updated. You have the latest version."; setTimeout(function(){ um.textContent=""; },4000); } }catch(e){}
