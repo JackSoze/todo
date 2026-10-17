@@ -31,12 +31,12 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
-main{max-width:520px;margin:0 auto;padding:0 20px 96px}
+main{max-width:520px;margin:0 auto;padding:0 14px 96px}
 h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:0 0 2px;line-height:1.15}
 .sub{color:var(--muted);margin:0 0 14px;font-size:15px}
 .add{display:flex;gap:8px;align-items:stretch;margin-bottom:10px}
-.add input{flex:1;min-width:0;height:58px;font:inherit;font-size:17px;padding:0 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
-.add input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.add input,.add textarea{flex:1;min-width:0;height:58px;font:inherit;font-size:17px;line-height:24px;padding:16px 16px 0;resize:none;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
+.add input:focus,.add textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
 .add button{height:58px;min-width:72px;font:inherit;font-weight:600;font-size:16px;padding:0 20px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
 .opts{display:flex;gap:8px;margin:0 0 10px}
 .opts label{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
@@ -50,16 +50,16 @@ li.done .meta{opacity:.6}
 .tabs button{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
 .tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 ul{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;border:1px solid var(--line);overflow:hidden}
-li{display:flex;align-items:flex-start;gap:12px;padding:8px 16px;border-bottom:1px solid var(--line)}
+li{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px;border-bottom:1px solid var(--line)}
 li:last-child{border-bottom:0}
-.num{flex:none;min-width:22px;line-height:28px;text-align:right;color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
-.check{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--muted);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--accent-ink);padding:0}
+.num{flex:none;min-width:20px;line-height:28px;text-align:right;color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.check{flex:none;width:24px;height:24px;margin-top:0;border-radius:7px;border:2px solid var(--muted);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--accent-ink);padding:0}
 li.done .check{background:var(--accent);border-color:var(--accent)}
-.check svg{width:16px;height:16px;opacity:0}
+.check svg{width:14px;height:14px;opacity:0}
 li.done .check svg{opacity:1}
-.text{flex:1;min-width:0;font-size:16px;line-height:22px;word-break:break-word;overflow-wrap:anywhere;padding-top:3px}
+.text{flex:1;min-width:0;font-size:16px;line-height:22px;word-break:break-word;overflow-wrap:anywhere;padding:3px 0}
 li.done .t{color:var(--muted);text-decoration:line-through}
-.del{flex:none;width:44px;height:44px;margin:-8px -10px -8px 0;border:0;background:transparent;color:var(--muted);font-size:22px;cursor:pointer;border-radius:10px}
+.del{flex:none;width:36px;height:44px;margin:-8px -4px -8px 0;border:0;background:transparent;color:var(--muted);font-size:22px;cursor:pointer;border-radius:10px}
 .del:hover,.del:focus-visible{color:var(--danger)}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .empty{padding:28px 18px;text-align:center;color:var(--muted)}
@@ -153,7 +153,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </div>
   </header>
   <div class="sheet" id="sheet" hidden><div class="sheetbox"><div class="add">
-    <input id="in" type="text" placeholder="Add a task" autocomplete="off" enterkeyhint="done" aria-label="New task">
+    <textarea id="in" rows="1" placeholder="Add a task" autocomplete="off" name="task-text" data-lpignore="true" data-form-type="other" enterkeyhint="done" aria-label="New task"></textarea>
     <button id="addBtn" type="button">Add</button>
   </div>
   <div class="opts">
@@ -176,7 +176,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </label>
   <div class="fdur"><button type="button" data-m="25">25 min</button><button type="button" data-m="50">50 min</button><button type="button" data-m="90">90 min</button></div>
   <label class="ftog"><input type="checkbox" id="ftick"><span>Tick-tock sound, like an old clock</span></label>
-  <div class="fnote">The screen turns black. You get a nudge when 5 minutes are left. Tap the screen for Pause, Keep screen on and Do not disturb.</div>
+  <div class="fnote">The screen turns black. You get a nudge when 5 minutes are left. Tap the screen for Pause, Tick sound and Keep screen on.</div>
 </div></div>
 <div id="focus" hidden>
   <div id="ftitle"></div>
@@ -249,13 +249,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     var isAff=filter==="affirmations"; document.getElementById("clear").hidden=isAff||!tasks.some(function(t){return t.done;}); list.hidden=isAff; document.getElementById("affwrap").hidden=!isAff; if(isAff) renderAff();
   }
   function add(){
-    var v=input.value.trim(); if(!v) return;
+    var v=input.value.replace(/\s*\n\s*/g," ").trim(); if(!v) return;
     var dv=document.getElementById("due").value; var wasEdit=!!editing;
     if(editing){ editing.text=v; editing.pri=parseInt(document.getElementById("pri").value,10); editing.due=dv||""; } else tasks.push({text:v,done:false,pri:parseInt(document.getElementById("pri").value,10),due:dv||""});
     input.value=""; document.getElementById("due").value=""; document.getElementById("pri").value="1"; save(); var fut=!!(dv&&dv>limitStr()); if(filter==="affirmations"||(fut&&filter==="today")||(!fut&&filter==="upcoming")) setFilter(fut?"upcoming":"today"); vib(); render(); closeSheet(); var act=list.querySelectorAll("li:not(.done)"); if(act.length&&!wasEdit) act[act.length-1].scrollIntoView({block:"nearest"});
   }
   document.getElementById("addBtn").onclick=add;
-  input.addEventListener("keydown",function(e){ if(e.key==="Enter") add(); });
+  input.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); add(); } });
   document.getElementById("clear").onclick=function(){ var prev=tasks.slice(); tasks=tasks.filter(function(t){return !t.done;}); save(); render(); showUndo("Done tasks cleared", function(){ tasks=prev; save(); render(); }); };
   document.querySelectorAll(".tabs button").forEach(function(b){
     b.onclick=function(){
@@ -310,17 +310,17 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   document.addEventListener("fullscreenchange",function(){ if(!document.fullscreenElement&&!document.getElementById("focus").hidden){ handleBack(); } });
   function setMeta(c){ try{ document.querySelector('meta[name="theme-color"]').setAttribute("content",c); }catch(e){} }
   function keepVideo(on){ try{ var v=document.getElementById("fkeep"); if(!v) return; if(on){ var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } else v.pause(); }catch(e){} }
-  var awakeOn=true, dndOn=false;
-  try{ awakeOn=localStorage.getItem("todo-focus-awake")!=="0"; dndOn=localStorage.getItem("todo-focus-dnd")==="1"; }catch(e){}
+  var awakeOn=true;
+  try{ awakeOn=localStorage.getItem("todo-focus-awake")!=="0"; }catch(e){}
   function lockOn(){ if(!awakeOn) return; keepVideo(true); try{ if(navigator.wakeLock&&!flock) navigator.wakeLock.request("screen").then(function(l){ flock=l; l.addEventListener("release",function(){ if(flock===l) flock=null; }); }).catch(function(){}); }catch(e){} }
   function lockOff(){ keepVideo(false); try{ if(flock){ flock.release(); flock=null; } }catch(e){} }
   document.addEventListener("visibilitychange",function(){ if(!document.hidden&&fcs){ if(!fcs.done&&!document.getElementById("focus").hidden) lockOn(); fTick(); updBanner(); } });
   var fac=null;
   function getAC(){ try{ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; if(!fac) fac=new AC(); if(fac.state==="suspended") fac.resume(); return fac; }catch(e){ return null; } }
-  function beep(freq,dur,vol,dt){ if(dndOn) return; try{ var c=getAC(); if(!c) return; var o=c.createOscillator(), g=c.createGain(), t0=c.currentTime+(dt||0); o.type="sine"; o.frequency.value=freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+.05); g.gain.exponentialRampToValueAtTime(.0001,t0+dur); o.start(t0); o.stop(t0+dur+.05); }catch(e){} }
+  function beep(freq,dur,vol,dt){ try{ var c=getAC(); if(!c) return; var o=c.createOscillator(), g=c.createGain(), t0=c.currentTime+(dt||0); o.type="sine"; o.frequency.value=freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+.05); g.gain.exponentialRampToValueAtTime(.0001,t0+dur); o.start(t0); o.stop(t0+dur+.05); }catch(e){} }
   function chime(){ beep(660,1.4,.25,0); }
   var tickAlt=false, noiseBuf=null;
-  function clickSound(){ if(dndOn) return; try{ var c=getAC(); if(!c) return; tickAlt=!tickAlt;
+  function clickSound(){ try{ var c=getAC(); if(!c) return; tickAlt=!tickAlt;
     if(!noiseBuf||noiseBuf.sampleRate!==c.sampleRate){ var n=Math.floor(c.sampleRate*.06); noiseBuf=c.createBuffer(1,n,c.sampleRate); var d=noiseBuf.getChannelData(0); for(var i=0;i<n;i++){ d[i]=(Math.random()*2-1)*Math.exp(-i/(c.sampleRate*.006)); } }
     var t0=c.currentTime, src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain();
     src.buffer=noiseBuf; bp.type="bandpass"; bp.frequency.value=tickAlt?3000:2200; bp.Q.value=1.2; g.gain.value=tickAlt?1.6:1.3;
@@ -336,7 +336,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   function fSave(){ try{ localStorage.setItem(FKEY,JSON.stringify({end:fcs.end,total:fcs.total,text:fcs.text,qi:fcs.qi,paused:fcs.paused||0})); }catch(e){} }
   function pad2(n){ return (n<10?"0":"")+n; }
   function warn5(){
-    if(!dndOn) vib([200,100,200]); beep(880,.5,.2,0); beep(880,.5,.2,.7);
+    vib([200,100,200]); beep(880,.5,.2,0); beep(880,.5,.2,.7);
     var m=document.getElementById("fmsg"); m.textContent="5 minutes left"; setTimeout(function(){ if(m.textContent==="5 minutes left") m.textContent=""; },20000);
   }
   function fTick(){
@@ -365,23 +365,17 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     if(awakeOn) lockOn(); else lockOff();
     showCtrl(false);
   }
-  function toggleDnd(){
-    dndOn=!dndOn; try{ localStorage.setItem("todo-focus-dnd",dndOn?"1":"0"); }catch(e){}
-    var t=dndOn?"Quiet mode on: no sounds or vibration. For calls and WhatsApp, also turn on your phone's Do Not Disturb (swipe down from the top).":"Quiet mode off";
-    setMsg(t); setTimeout(function(){ if(document.getElementById("fmsg").textContent===t) setMsg(fcs&&fcs.paused?"Paused":""); },9000);
-    showCtrl(false);
-  }
   function showCtrl(done){
     var c=document.getElementById("fctrl"); c.innerHTML="";
     function mk(txt,fn){ var b=document.createElement("button"); b.type="button"; b.textContent=txt; b.onclick=function(e){ e.stopPropagation(); fn(); }; c.appendChild(b); }
     if(done){ var tk=findFocusTask(); if(tk) mk("Mark task done",function(){ tk.done=true; tk.doneAt=todayStr(); save(); endFocus(); render(); }); mk("Close",endFocus); }
-    else { mk(fcs.paused?"Resume":"Pause",togglePause); mk("+5 min",function(){ fcs.end+=5*60000; fcs.total+=5*60000; fcs.warned=false; document.getElementById("fmsg").textContent=""; fSave(); fTick(); showCtrl(false); }); mk("Tick sound: "+(fcs.tick?"on":"off"),function(){ fcs.tick=!fcs.tick; try{ localStorage.setItem("todo-focus-tick",fcs.tick?"1":"0"); document.getElementById("ftick").checked=fcs.tick; }catch(e){} showCtrl(false); }); mk("Screen on: "+(awakeOn?"yes":"no"),toggleAwake); c.lastChild.className=awakeOn?"on":""; mk("Do not disturb: "+(dndOn?"on":"off"),toggleDnd); c.lastChild.className=dndOn?"on":""; mk("End session",endFocus); }
+    else { mk(fcs.paused?"Resume":"Pause",togglePause); mk("+5 min",function(){ fcs.end+=5*60000; fcs.total+=5*60000; fcs.warned=false; document.getElementById("fmsg").textContent=""; fSave(); fTick(); showCtrl(false); }); mk("Tick sound: "+(fcs.tick?"on":"off"),function(){ fcs.tick=!fcs.tick; try{ localStorage.setItem("todo-focus-tick",fcs.tick?"1":"0"); document.getElementById("ftick").checked=fcs.tick; }catch(e){} showCtrl(false); }); mk("Screen on: "+(awakeOn?"yes":"no"),toggleAwake); c.lastChild.className=awakeOn?"on":""; mk("End session",endFocus); }
     c.hidden=false; clearTimeout(fhide); if(!done) fhide=setTimeout(function(){ c.hidden=true; },6000);
   }
   function fComplete(){
     clearInterval(ftimer); fcs.done=true; try{ localStorage.removeItem(FKEY); }catch(e){}
     if(document.getElementById("focus").hidden){ document.getElementById("focus").hidden=false; document.getElementById("fbanner").hidden=true; setMeta("#000000"); }
-    lockOff(); if(!dndOn) vib([300,150,300,150,300]); chime();
+    lockOff(); vib([300,150,300,150,300]); chime();
     document.getElementById("fprog").setAttribute("stroke-dashoffset","0");
     document.getElementById("fleft").textContent="Done"; document.getElementById("fmsg").textContent="Session complete. Well done.";
     showCtrl(true);
