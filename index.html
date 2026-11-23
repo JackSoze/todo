@@ -45,6 +45,7 @@ h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:0 0 2px;line-heig
 .meta{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:13px;color:var(--muted);margin-top:0;padding-bottom:0}
 .meta .hi{color:var(--danger);font-weight:600}
 .meta .late{color:var(--danger);font-weight:600}
+.meta .duel{flex-basis:100%}
 li.done .meta{opacity:.6}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .tabs button{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
@@ -149,6 +150,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 #fbanner{margin:0 0 8px;width:100%;font:inherit;font-weight:600;font-size:13px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;text-align:center}
 #fbanner[hidden]{display:none}
 #fkeep{position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none}
+#fwk{width:min(40vw,150px);margin-top:-4px}
+#fwk .r{display:flex;justify-content:center;font-size:12px;letter-spacing:.03em;color:#5e5e5e;margin-bottom:7px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#fwk .b{height:3px;border-radius:99px;background:#161616;overflow:hidden}
+#fwk .bw{position:relative}
+#fwk .m{position:absolute;left:0;top:-3px;width:2px;height:9px;margin-left:-1px;border-radius:1px;background:#9a9a9a}
+#fwk.ok .r{color:#d8d8d8}
+#fwk.ok .b i{background:#f0f0f0}
+#fwk.ok .m{display:none}
+#fwk .b i{display:block;height:100%;width:0;border-radius:99px;background:#7a7a7a;transition:width .4s ease}
 @media (max-width:360px){.add button{min-width:64px;padding:0 14px}.opts{gap:6px}.opts select,.opts input{padding:0 8px}}
 @media (prefers-reduced-motion:no-preference){.check{transition:background .15s,border-color .15s}}
 </style>
@@ -162,7 +172,6 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   <button id="fbanner" type="button" hidden></button>
   <div class="tabs" role="group" aria-label="Filter tasks">
     <button type="button" data-f="today" aria-pressed="true">Today</button>
-    <button type="button" data-f="upcoming" aria-pressed="false">Upcoming</button>
     <button type="button" data-f="affirmations" aria-pressed="false">Affirmations</button>
   </div>
   </header>
@@ -196,6 +205,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   <div id="ftitle"></div>
   <svg id="fclock" viewBox="0 0 200 200" aria-hidden="true"></svg>
   <div id="fleft" role="status"></div>
+  <div id="fwk"><div class="r"><span id="fwkv"></span></div><div class="bw"><div class="b"><i id="fwkfill"></i></div><span class="m" id="fwkmark"></span></div></div>
   <div id="fmsg" role="status"></div>
   <div id="fquote"></div>
   <div id="fqby">Idea from Deep Work by Cal Newport (paraphrased)</div>
@@ -218,10 +228,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   function dueLabel(t){
     if(!t.due) return null;
     var n=dayDiff(t.due);
-    if(n<0) return {late:!t.done, text: t.done? "Was due "+t.due : "Overdue by "+(-n)+(n===-1?" day":" days")};
-    if(n===0) return {late:false,text:"Due today"};
-    if(n===1) return {late:false,text:"Due tomorrow"};
-    return {late:false,text:"Due "+new Date(t.due+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"})};
+    var ds=new Date(t.due+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"});
+    if(t.done) return {late:false,text:"Was due "+ds};
+    if(n<0) return {late:true,text:"Overdue by "+(-n)+(n===-1?" day":" days")+" \u00b7 "+ds};
+    if(n===0) return {late:true,text:"Due today \u00b7 "+ds};
+    if(n===1) return {late:true,text:"Due tomorrow \u00b7 "+ds};
+    return {late:false,text:"Due "+ds};
   }
   function pri(t){ return t.pri===undefined?1:t.pri; }
   try{ if(!localStorage.getItem("todo-order-v2")){ tasks.reverse(); localStorage.setItem("todo-order-v2","1"); localStorage.setItem(KEY, JSON.stringify(tasks)); } }catch(e){}
@@ -230,7 +242,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   var tick='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
 
   function render(){
-    var td=todayStr(), lim=limitStr(); var shown=tasks.filter(function(t){ if(filter==="today") return t.done||(!t.due||t.due<=lim); if(filter==="upcoming") return !t.done&&t.due&&t.due>lim; return filter==="all"||(filter==="done"?t.done:!t.done); }); if(filter==="today"||filter==="upcoming") shown.sort(function(a,b){ var x=a.due||td, y=b.due||td; return x<y?-1:(x>y?1:0); });
+    var td=todayStr(), lim=limitStr(); var shown=tasks.filter(function(t){ if(filter==="today") return true; if(filter==="upcoming") return !t.done&&t.due&&t.due>lim; return filter==="all"||(filter==="done"?t.done:!t.done); }); if(filter==="today"||filter==="upcoming") shown.sort(function(a,b){ var x=a.due||"", y=b.due||""; return x<y?-1:(x>y?1:0); });
     shown=shown.filter(function(t){return !t.done;}).concat(shown.filter(function(t){return t.done;}));
     list.innerHTML=""; list.className="";
     if(!shown.length){
@@ -251,7 +263,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
         var m=document.createElement("div"); m.className="meta";
         if(pri(t)===2){ var h=document.createElement("span"); h.className="hi"; h.textContent="High priority"; m.appendChild(h); }
         if(pri(t)===0){ var l=document.createElement("span"); l.textContent="Low priority"; m.appendChild(l); }
-        if(dl){ var d2=document.createElement("span"); if(dl.late) d2.className="late"; d2.textContent=dl.text; m.appendChild(d2); }
+        if(dl){ var d2=document.createElement("span"); d2.className="duel"+(dl.late?" late":""); d2.textContent=dl.text; m.appendChild(d2); }
         s.appendChild(m);
       }
       
@@ -268,7 +280,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     var v=input.value.replace(/\s*\n\s*/g," ").trim(); if(!v) return;
     var dv=document.getElementById("due").value; var wasEdit=!!editing;
     if(editing){ editing.text=v; editing.pri=parseInt(document.getElementById("pri").value,10); editing.due=dv||""; } else tasks.push({text:v,done:false,pri:parseInt(document.getElementById("pri").value,10),due:dv||""});
-    input.value=""; document.getElementById("due").value=""; document.getElementById("pri").value="1"; save(); var fut=!!(dv&&dv>limitStr()); if(filter==="affirmations"||(fut&&filter==="today")||(!fut&&filter==="upcoming")) setFilter(fut?"upcoming":"today"); vib(); render(); closeSheet(); var act=list.querySelectorAll("li:not(.done)"); if(act.length&&!wasEdit) act[act.length-1].scrollIntoView({block:"nearest"});
+    input.value=""; document.getElementById("due").value=""; document.getElementById("pri").value="1"; save(); var fut=false; if(filter==="affirmations"||(fut&&filter==="today")||(!fut&&filter==="upcoming")) setFilter(fut?"upcoming":"today"); vib(); render(); closeSheet(); var act=list.querySelectorAll("li:not(.done)"); if(act.length&&!wasEdit) act[act.length-1].scrollIntoView({block:"nearest"});
   }
   document.getElementById("addBtn").onclick=add;
   input.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); add(); } });
@@ -333,6 +345,23 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   // ----- Deep work timer -----
   var fcs=null, ftimer=null, fhide=null, flock=null, FKEY="todo-focus-v1", FC=578.05;
   var Q=["Quality of work comes from time spent multiplied by how intensely you focus.", "A short stretch of full focus can beat long hours of distracted effort.", "Deep, distraction-free effort is rare, and that is exactly why it is valuable.", "Decide your rules for depth ahead of time: where, for how long, and what you will leave out.", "Treat boredom as practice. Learn not to reach for your phone the moment something gets dull.", "Concentration is a skill like a muscle. It grows with regular, deliberate training.", "Plan the day in blocks, and rework the plan when interruptions hit.", "Say no to many shallow tasks so the important ones get your best hours.", "Pick a few big goals and track the daily hours you put into them.", "A visible scoreboard of deep hours keeps you honest and motivated.", "Build a ritual: the same place, the same start signal and the same supplies before each session.", "A clear end-of-day shutdown lets your mind rest, so tomorrow's focus is better.", "Truly unplugged time away from work helps good ideas form.", "Attention given to scattered tasks leaves a residue that follows you into the next one.", "Finish one thing before switching. Switching leaves part of your mind behind.", "Be deliberate about shallow work: batch it, limit it, and keep it from spilling over.", "A small, clear aim for each session beats a vague plan to work hard.", "People who produce rare and valuable work do it by going deep again and again.", "Give your best hours to your hardest task.", "You do not need perfect conditions. Start the session and let the focus build."];
+  // ----- Weekly deep work goal (24h, Monday to Sunday) -----
+  var WKEY="todo-focus-log-v1", WGOAL=24*3600, flog={};
+  try{ flog=JSON.parse(localStorage.getItem(WKEY)||"{}")||{}; }catch(e){ flog={}; }
+  function dayKey(d){ return d.toLocaleDateString("en-CA"); }
+  function wkSave(){ try{ localStorage.setItem(WKEY,JSON.stringify(flog)); }catch(e){} }
+  (function(){ var old=dayKey(new Date(Date.now()-120*864e5)), ch=false; for(var k in flog){ if(k<old){ delete flog[k]; ch=true; } } if(ch) wkSave(); })();
+  function wkAdd(sec){ var k=dayKey(new Date()); flog[k]=(flog[k]||0)+sec; wkSave(); }
+  function wkInfo(){ var n=new Date(), back=(n.getDay()+6)%7, a=dayKey(new Date(n.getFullYear(),n.getMonth(),n.getDate()-back)), b=dayKey(new Date(n.getFullYear(),n.getMonth(),n.getDate()-back+6)), s=0; for(var k in flog){ if(k>=a&&k<=b) s+=flog[k]; } return {secs:s,left:7-back}; }
+  function fmtHM(s){ var h=Math.floor(s/3600), m=Math.floor((s%3600)/60); if(!h&&!m) return "0h"; return h ? h+"h"+(m?" "+m+"m":"") : m+"m"; }
+  function wkPaint(){
+    var w=wkInfo(), s=w.secs, p=Math.min(100,s/WGOAL*100), txt=fmtHM(s)+" / 24h";
+    function set(id,fn){ var e=document.getElementById(id); if(e) fn(e); }
+    set("wkv",function(e){ e.textContent=txt; }); set("fwkv",function(e){ e.textContent=s>=WGOAL ? "Weekly goal reached" : fmtHM(s)+" of 24h this week"; }); set("fwk",function(e){ e.classList.toggle("ok",s>=WGOAL); }); set("fwkmark",function(e){ e.style.left=((8-w.left)/7*100)+"%"; });
+    set("wkfill",function(e){ e.style.width=p+"%"; }); set("fwkfill",function(e){ e.style.width=p+"%"; });
+    set("wkbar",function(e){ e.setAttribute("aria-valuenow",(s/3600).toFixed(1)); });
+    set("wkn",function(e){ if(s>=WGOAL){ e.textContent="Weekly goal reached. Well done."; } else { var rem=WGOAL-s; e.textContent=fmtHM(rem)+" to go"+(w.left>1 ? " \u00b7 about "+fmtHM(Math.ceil(rem/w.left))+" a day for "+w.left+" days" : " \u00b7 last day of the week"); } });
+  }
   function fmtLeft(ms){ var rs=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(rs/3600), m=Math.floor((rs%3600)/60), sc=rs%60; return (h>0?h+":"+pad2(m):pad2(m))+":"+pad2(sc); }
   function updBanner(){ var b=document.getElementById("fbanner"); if(!fcs||fcs.done||!document.getElementById("focus").hidden){ b.hidden=true; return; } b.hidden=false; b.textContent=(fcs.paused?"Deep work paused \u00b7 ":"Deep work \u00b7 ")+fmtLeft(fcs.end-(fcs.paused||Date.now()))+" left \u00b7 tap to return"; }
   function showFocusScreen(push){
@@ -379,7 +408,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     s+='<line id="fh" x1="100" y1="100" x2="100" y2="58" stroke="#f0f0f0" stroke-width="5" stroke-linecap="round"/><line id="fm" x1="100" y1="100" x2="100" y2="34" stroke="#f0f0f0" stroke-width="3.5" stroke-linecap="round"/><line id="fs" x1="100" y1="110" x2="100" y2="26" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/><circle cx="100" cy="100" r="4.5" fill="#f0f0f0"/>';
     return s;
   }
-  function fSave(){ try{ localStorage.setItem(FKEY,JSON.stringify({end:fcs.end,total:fcs.total,text:fcs.text,qi:fcs.qi,paused:fcs.paused||0})); }catch(e){} }
+  function fSave(){ try{ localStorage.setItem(FKEY,JSON.stringify({end:fcs.end,total:fcs.total,text:fcs.text,qi:fcs.qi,paused:fcs.paused||0,le:fcs.le})); }catch(e){} }
   function pad2(n){ return (n<10?"0":"")+n; }
   function warn5(){
     vib([200,100,200]); beep(880,.5,.2,0); beep(880,.5,.2,.7);
@@ -392,6 +421,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     document.getElementById("fm").setAttribute("transform","rotate("+((m+sc/60)*6)+" 100 100)");
     document.getElementById("fs").setAttribute("transform","rotate("+(sc*6)+" 100 100)");
     var qn=(fcs.qi+Math.floor(es/1800))%Q.length; if(fcs.qshown!==qn){ var first=(fcs.qshown===undefined); fcs.qshown=qn; var qe=document.getElementById("fquote"); if(first){ qe.textContent=Q[qn]; } else { qe.style.opacity=0; setTimeout(function(){ qe.textContent=Q[qn]; qe.style.opacity=1; },300); } }
+    if(fcs.le===undefined) fcs.le=es; if(es>fcs.le){ wkAdd(es-fcs.le); fcs.le=es; fSave(); } wkPaint();
     var fr=Math.max(0,Math.min(1,ms/fcs.total)); document.getElementById("fprog").setAttribute("stroke-dashoffset",String(FC*fr));
     if(ms<=0){ fComplete(); return; }
     document.getElementById("fleft").textContent = rh>0 ? rh+":"+pad2(rm)+":"+pad2(rsec) : pad2(rm)+":"+pad2(rsec);
@@ -432,8 +462,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     document.getElementById("focus").hidden=true; document.getElementById("fbanner").hidden=true; lockOff(); setMeta("#1F6F5C");
     try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){}
   }
-  function startFocus(total,text,endAt,qi,paused){
-    fcs={end:endAt||Date.now()+total,total:total,text:text||"",done:false,warned:false,paused:paused||0,tick:!!document.getElementById("ftick").checked,qi:(typeof qi==="number")?qi:Math.floor(Math.random()*Q.length)}; fSave(); getAC(); document.getElementById("fmsg").textContent="";
+  function startFocus(total,text,endAt,qi,paused,le){
+    fcs={end:endAt||Date.now()+total,total:total,text:text||"",done:false,warned:false,paused:paused||0,tick:!!document.getElementById("ftick").checked,qi:(typeof qi==="number")?qi:Math.floor(Math.random()*Q.length),le:(typeof le==="number")?le:undefined}; fSave(); getAC(); document.getElementById("fmsg").textContent="";
     closeFocusSheet(); document.getElementById("ftitle").textContent=fcs.text;
     document.getElementById("fclock").innerHTML=buildClock();
     var c=document.getElementById("fctrl"); c.innerHTML=""; c.hidden=true;
@@ -445,7 +475,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     var o0=document.createElement("option"); o0.value="-1"; o0.textContent="No specific task"; sel.appendChild(o0);
     tasks.forEach(function(x,i){ if(!x.done){ var o=document.createElement("option"); o.value=String(i); o.textContent=x.text.length>40?x.text.slice(0,40)+"\u2026":x.text; sel.appendChild(o); } });
     if(t){ var i=tasks.indexOf(t); if(i>=0) sel.value=String(i); }
-    document.getElementById("fsheet").hidden=false; fab.style.display="none";
+    document.getElementById("fsheet").hidden=false; fab.style.display="none"; wkPaint();
   }
   function closeFocusSheet(){ document.getElementById("fsheet").hidden=true; fab.style.display=""; }
   document.getElementById("focusBtn").onclick=function(){ openFocus(); };
@@ -455,9 +485,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!document.getElementById("fsheet").hidden) closeFocusSheet(); });
   document.getElementById("focus").addEventListener("click",function(){ if(!fcs||fcs.done) return; var c=document.getElementById("fctrl"); if(c.hidden) showCtrl(false); else c.hidden=true; });
   (function(){ var tk=document.getElementById("ftick"); tk.checked=true; try{ tk.checked=localStorage.getItem("todo-focus-tick")!=="0"; }catch(e){} tk.onchange=function(){ try{ localStorage.setItem("todo-focus-tick",tk.checked?"1":"0"); }catch(e){} }; })();
-  try{ var sv=JSON.parse(localStorage.getItem(FKEY)||"null"); if(sv&&(sv.paused?sv.paused>Date.now()-12*3600000:sv.end>Date.now()-6*3600000)){ startFocus(sv.total,sv.text,sv.end,sv.qi,sv.paused); if(sv.paused) setMsg("Paused"); } else if(sv) localStorage.removeItem(FKEY); }catch(e){}
+  try{ var sv=JSON.parse(localStorage.getItem(FKEY)||"null"); if(sv&&(sv.paused?sv.paused>Date.now()-12*3600000:sv.end>Date.now()-6*3600000)){ startFocus(sv.total,sv.text,sv.end,sv.qi,sv.paused,sv.le); if(sv.paused) setMsg("Paused"); } else if(sv) localStorage.removeItem(FKEY); }catch(e){}
   render();
-  var um=document.getElementById("updMsg");
+  wkPaint(); var um=document.getElementById("updMsg");
   try{ if(sessionStorage.getItem("updated")){ sessionStorage.removeItem("updated"); um.textContent="Updated. You have the latest version."; setTimeout(function(){ um.textContent=""; },4000); } }catch(e){}
   document.getElementById("upd").onclick=function(){
     if(!navigator.onLine){ um.textContent="No internet. Try again when connected."; return; }
